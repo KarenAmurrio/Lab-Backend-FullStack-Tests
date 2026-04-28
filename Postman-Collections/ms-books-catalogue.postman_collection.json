@@ -1,0 +1,181 @@
+{
+  "info": {
+    "_postman_id": "982ea481-25e2-4b19-8820-a1d5d3dfa604",
+    "name": "ms-books-catalogue",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53087191",
+    "_collection_link": "https://go.postman.co/collection/53087191-982ea481-25e2-4b19-8820-a1d5d3dfa604?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "GET Libros",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/libros",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET ID Libro",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/libros/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"titulo\": \"El Señor de los Anillos\",\r\n    \"autor\": \"J.R.R. Tolkien\",\r\n    \"editorial\": \"Allen & Unwin\",\r\n    \"anio\": 1954,\r\n    \"isbn\": \"978-0544003415\",\r\n    \"resumen\": \"Una épica de aventuras en la Tierra Media\",\r\n    \"genero\": \"Fantasía\",\r\n    \"precio\": 39.99,\r\n    \"imagen\": \"https://example.com/lotr.jpg\",\r\n    \"stock\": 25,\r\n    \"visible\": true,\r\n    \"valoracion\": 5\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/libros",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"titulo\": \"El Señor de los Anillos 22\",\r\n    \"autor\": \"J.R.R. Tolkien\",\r\n    \"editorial\": \"Allen & Unwin\",\r\n    \"anio\": 1954,\r\n    \"isbn\": \"978-0544003415\",\r\n    \"resumen\": \"Una épica de aventuras en la Tierra Media\",\r\n    \"genero\": \"Fantasía\",\r\n    \"precio\": 39.99,\r\n    \"imagen\": \"https://example.com/lotr.jpg\",\r\n    \"stock\": 25,\r\n    \"visible\": true,\r\n    \"valoracion\": 5\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/libros/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"precio\": 24.99,\r\n    \"stock\": 100\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/libros/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/libros/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET por genero",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/libros?genero=Fantasía",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "libros"
+          ],
+          "query": [
+            {
+              "key": "genero",
+              "value": "Fantasía"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
