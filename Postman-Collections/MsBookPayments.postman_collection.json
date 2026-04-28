@@ -1,0 +1,112 @@
+{
+  "info": {
+    "_postman_id": "c4317bf1-84f2-4f06-ac13-4f3c98fb24eb",
+    "name": "MsBookPayments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40464949"
+  },
+  "item": [
+    {
+      "name": "Monitoreo",
+      "item": [
+        {
+          "name": "Status",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "C - Gateway Compras",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"targetMethod\": \"POST\",\n  \"queryParams\": {},\n  \"body\": {\n    \"libroId\": \"1\",\n    \"cantidad\": 2,\n\t\t\"precioTotal\": 39.80\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9191/msbookpayments/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9191",
+          "path": [
+            "msbookpayments",
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Proxy Compras",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8181/msbookpayments/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8181",
+          "path": [
+            "msbookpayments",
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Compras",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:7171/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "7171",
+          "path": [
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
