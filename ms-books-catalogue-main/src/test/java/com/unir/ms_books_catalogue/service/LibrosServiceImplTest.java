@@ -1,6 +1,10 @@
 package com.unir.ms_books_catalogue.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.unir.ms_books_catalogue.controller.model.LibroDto;
 import com.unir.ms_books_catalogue.data.LibroRepository;
 import com.unir.ms_books_catalogue.data.model.Libro;
@@ -16,18 +20,32 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class LibrosServiceImplTest {
 
-    @Mock
-    private LibroRepository repository;
+    // =========================================================
+    // Mocks — objetos falsos que reemplazan las dependencias
+    // reales del service. Con esto no necesitamos BD ni Jackson real.
+    // =========================================================
 
     @Mock
-    private ObjectMapper objectMapper;
+    private LibroRepository repository;  // simula el acceso a BD
+
+    @Mock
+    private ObjectMapper objectMapper;   // simula la conversion JSON (solo PATCH)
+
+    // =========================================================
+    // InjectMocks — crea el service REAL e inyecta los mocks
+    // =========================================================
 
     @InjectMocks
     private LibrosServiceImpl service;
+
+    // =========================================================
+    // Datos de prueba reutilizables
+    // =========================================================
 
     private Libro libroMock;
     private LibroDto libroDtoMock;
@@ -36,6 +54,7 @@ class LibrosServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
+        // Libro completo con todos los campos obligatorios
         libroMock = new Libro();
         libroMock.setId(1L);
         libroMock.setTitulo("Clean Code");
@@ -49,6 +68,7 @@ class LibrosServiceImplTest {
         libroMock.setVisible(true);
         libroMock.setValoracion(5);
 
+        // DTO con los mismos datos
         libroDtoMock = new LibroDto();
         libroDtoMock.setTitulo("Clean Code");
         libroDtoMock.setAutor("Robert Martin");
@@ -63,35 +83,38 @@ class LibrosServiceImplTest {
     }
 
     // =========================================================
-    // getLibros
+    // getLibros — 5 tests
+    // JUnit: estructura y asserts
+    // Mockito: simula repository.getLibros() y repository.search()
     // =========================================================
 
     @Test
     @DisplayName("getLibros sin filtros retorna lista cuando hay datos")
     void getLibros_sinFiltros_conDatos_retornaLista() {
-        // Given
+        // Given — programamos el mock para devolver una lista con un libro
         when(repository.getLibros()).thenReturn(List.of(libroMock));
 
-        // When
+        // When — ejecutamos el metodo real del service
         List<Libro> result = service.getLibros(null, null, null, null, null, null, null);
 
-        // Then
+        // Then — JUnit verifica el resultado, Mockito verifica las llamadas
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Clean Code", result.get(0).getTitulo());
         verify(repository, times(1)).getLibros();
+        verify(repository, never()).search(any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
-    @DisplayName("getLibros sin filtros retorna null cuando lista vacia")
+    @DisplayName("getLibros sin filtros retorna null cuando lista esta vacia")
     void getLibros_sinFiltros_listaVacia_retornaNull() {
-        // Given
+        // Given — el repositorio devuelve lista vacia
         when(repository.getLibros()).thenReturn(Collections.emptyList());
 
         // When
         List<Libro> result = service.getLibros(null, null, null, null, null, null, null);
 
-        // Then
+        // Then — el service convierte lista vacia en null
         assertNull(result);
         verify(repository, times(1)).getLibros();
     }
@@ -106,7 +129,7 @@ class LibrosServiceImplTest {
         // When
         List<Libro> result = service.getLibros("Clean Code", null, null, null, null, null, null);
 
-        // Then
+        // Then — cuando hay filtro nunca debe llamar a getLibros()
         assertNotNull(result);
         assertEquals(1, result.size());
         verify(repository, times(1)).search("Clean Code", null, null, null, null, null, null);
@@ -145,8 +168,69 @@ class LibrosServiceImplTest {
         verify(repository, never()).getLibros();
     }
 
+    @Test
+    @DisplayName("getLibros con filtro editorial llama a repository.search")
+    void getLibros_conFiltroEditorial_llamaSearch() {
+        when(repository.search(null, null, "Prentice Hall", null, null, null, null))
+                .thenReturn(List.of(libroMock));
+
+        List<Libro> result = service.getLibros(null, null, "Prentice Hall", null, null, null, null);
+
+        assertNotNull(result);
+        verify(repository).search(null, null, "Prentice Hall", null, null, null, null);
+    }
+
+    @Test
+    @DisplayName("getLibros con filtro anio llama a repository.search")
+    void getLibros_conFiltroAnio_llamaSearch() {
+        when(repository.search(null, null, null, 2008, null, null, null))
+                .thenReturn(List.of(libroMock));
+
+        List<Libro> result = service.getLibros(null, null, null, 2008, null, null, null);
+
+        assertNotNull(result);
+        verify(repository).search(null, null, null, 2008, null, null, null);
+    }
+
+    @Test
+    @DisplayName("getLibros con filtro resumen llama a repository.search")
+    void getLibros_conFiltroResumen_llamaSearch() {
+        when(repository.search(null, null, null, null, "guia", null, null))
+                .thenReturn(List.of(libroMock));
+
+        List<Libro> result = service.getLibros(null, null, null, null, "guia", null, null);
+
+        assertNotNull(result);
+        verify(repository).search(null, null, null, null, "guia", null, null);
+    }
+
+    @Test
+    @DisplayName("getLibros con filtro genero llama a repository.search")
+    void getLibros_conFiltroGenero_llamaSearch() {
+        when(repository.search(null, null, null, null, null, "Tecnologia", null))
+                .thenReturn(List.of(libroMock));
+
+        List<Libro> result = service.getLibros(null, null, null, null, null, "Tecnologia", null);
+
+        assertNotNull(result);
+        verify(repository).search(null, null, null, null, null, "Tecnologia", null);
+    }
+
+    @Test
+    @DisplayName("crearLibro con visible null retorna null")
+    void crearLibro_visibleNull_retornaNull() {
+        libroDtoMock.setVisible(null);
+
+        Libro result = service.crearLibro(libroDtoMock);
+
+        assertNull(result);
+        verify(repository, never()).save(any());
+    }
+
     // =========================================================
-    // getLibro
+    // getLibro — 2 tests
+    // JUnit: asserts del resultado
+    // Mockito: simula repository.getById()
     // =========================================================
 
     @Test
@@ -168,7 +252,7 @@ class LibrosServiceImplTest {
     @Test
     @DisplayName("getLibro con ID inexistente retorna null")
     void getLibro_idNoExiste_retornaNull() {
-        // Given
+        // Given — getById devuelve null cuando no encuentra
         when(repository.getById(99L)).thenReturn(null);
 
         // When
@@ -180,11 +264,13 @@ class LibrosServiceImplTest {
     }
 
     // =========================================================
-    // eliminarLibro
+    // eliminarLibro — 2 tests
+    // JUnit: verifica el boolean retornado
+    // Mockito: simula getById() y verifica que delete() se llamo o no
     // =========================================================
 
     @Test
-    @DisplayName("eliminarLibro con ID existente elimina y retorna true")
+    @DisplayName("eliminarLibro con ID existente elimina el libro y retorna true")
     void eliminarLibro_idExiste_retornaTrue() {
         // Given
         when(repository.getById(1L)).thenReturn(libroMock);
@@ -196,11 +282,11 @@ class LibrosServiceImplTest {
         // Then
         assertTrue(result);
         verify(repository, times(1)).getById(1L);
-        verify(repository, times(1)).delete(libroMock);
+        verify(repository, times(1)).delete(libroMock); // debe haberse llamado
     }
 
     @Test
-    @DisplayName("eliminarLibro con ID inexistente retorna false")
+    @DisplayName("eliminarLibro con ID inexistente retorna false sin llamar delete")
     void eliminarLibro_idNoExiste_retornaFalse() {
         // Given
         when(repository.getById(99L)).thenReturn(null);
@@ -211,15 +297,17 @@ class LibrosServiceImplTest {
         // Then
         assertFalse(result);
         verify(repository, times(1)).getById(99L);
-        verify(repository, never()).delete(any());
+        verify(repository, never()).delete(any()); // nunca debe llamar delete
     }
 
     // =========================================================
-    // crearLibro
+    // crearLibro — 8 tests
+    // JUnit: verifica el libro retornado o null
+    // Mockito: simula repository.save() y verifica que se llamo o no
     // =========================================================
 
     @Test
-    @DisplayName("crearLibro con datos validos crea y retorna el libro")
+    @DisplayName("crearLibro con todos los campos validos crea y retorna el libro")
     void crearLibro_datosValidos_retornaLibroCreado() {
         // Given
         when(repository.save(any(Libro.class))).thenReturn(libroMock);
@@ -236,10 +324,10 @@ class LibrosServiceImplTest {
     @Test
     @DisplayName("crearLibro con LibroDto null retorna null")
     void crearLibro_libroDtoNull_retornaNull() {
-        // When
+        // When — pasamos null directamente
         Libro result = service.crearLibro(null);
 
-        // Then
+        // Then — el service debe retornar null sin llamar al repositorio
         assertNull(result);
         verify(repository, never()).save(any());
     }
@@ -247,7 +335,7 @@ class LibrosServiceImplTest {
     @Test
     @DisplayName("crearLibro con titulo vacio retorna null")
     void crearLibro_tituloVacio_retornaNull() {
-        // Given
+        // Given — titulo con solo espacios
         libroDtoMock.setTitulo("   ");
 
         // When
@@ -272,12 +360,129 @@ class LibrosServiceImplTest {
         verify(repository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("crearLibro con editorial vacia retorna null")
+    void crearLibro_editorialVacia_retornaNull() {
+        // Given
+        libroDtoMock.setEditorial("   ");
+
+        // When
+        Libro result = service.crearLibro(libroDtoMock);
+
+        // Then
+        assertNull(result);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("crearLibro con genero vacio retorna null")
+    void crearLibro_generoVacio_retornaNull() {
+        // Given
+        libroDtoMock.setGenero("");
+
+        // When
+        Libro result = service.crearLibro(libroDtoMock);
+
+        // Then
+        assertNull(result);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("crearLibro con precio null retorna null")
+    void crearLibro_precioNull_retornaNull() {
+        // Given
+        libroDtoMock.setPrecio(null);
+
+        // When
+        Libro result = service.crearLibro(libroDtoMock);
+
+        // Then
+        assertNull(result);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("crearLibro con stock null retorna null")
+    void crearLibro_stockNull_retornaNull() {
+        // Given
+        libroDtoMock.setStock(null);
+
+        // When
+        Libro result = service.crearLibro(libroDtoMock);
+
+        // Then
+        assertNull(result);
+        verify(repository, never()).save(any());
+    }
+
     // =========================================================
-    // actualizarLibro PUT
+    // actualizarLibro PATCH — 3 tests
+    // JUnit: verifica el resultado
+    // Mockito: simula repository.getById(), objectMapper (JSON processing)
+    // Este es el metodo mas complejo porque usa ObjectMapper
     // =========================================================
 
     @Test
-    @DisplayName("actualizarLibro PUT con ID existente actualiza y retorna libro")
+    @DisplayName("actualizarLibro PATCH con ID existente y JSON valido retorna libro actualizado")
+    void actualizarLibro_PATCH_idExiste_retornaLibroActualizado() throws Exception {
+        // Usamos ObjectMapper real porque JsonMergePatch.fromJson es estatico
+        // y Mockito no puede mockearlo directamente
+        ObjectMapper realMapper = new ObjectMapper();
+        LibrosServiceImpl serviceReal = new LibrosServiceImpl(repository, realMapper);
+
+        String jsonPatch = "{\"titulo\": \"Nuevo Titulo\"}";
+        when(repository.getById(1L)).thenReturn(libroMock);
+        when(repository.save(any(Libro.class))).thenReturn(libroMock);
+
+        // When
+        Libro result = serviceReal.actualizarLibro("1", jsonPatch);
+
+        // Then
+        assertNotNull(result);
+        verify(repository, times(1)).getById(1L);
+        verify(repository, times(1)).save(any(Libro.class));
+    }
+
+    @Test
+    @DisplayName("actualizarLibro PATCH con ID inexistente retorna null")
+    void actualizarLibro_PATCH_idNoExiste_retornaNull() {
+        // Given
+        when(repository.getById(99L)).thenReturn(null);
+
+        // When
+        Libro result = service.actualizarLibro("99", "{\"titulo\": \"Nuevo Titulo\"}");
+
+        // Then — si no existe el libro retorna null sin procesar JSON
+        assertNull(result);
+        verify(repository, times(1)).getById(99L);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("actualizarLibro PATCH con JSON invalido retorna null")
+    void actualizarLibro_PATCH_jsonInvalido_retornaNull() throws Exception {
+        // Given — el libro existe pero el objectMapper lanza excepcion
+        when(repository.getById(1L)).thenReturn(libroMock);
+        when(objectMapper.readTree(anyString())).thenThrow(new JsonProcessingException("JSON invalido") {});
+
+        // When
+        Libro result = service.actualizarLibro("1", "json-invalido");
+
+        // Then — cuando falla el JSON el service captura la excepcion y retorna null
+        assertNull(result);
+        verify(repository, never()).save(any());
+    }
+
+    // =========================================================
+    // actualizarLibro PUT — 2 tests
+    // JUnit: verifica el resultado
+    // Mockito: simula repository.getById() y repository.save()
+    // No usa ObjectMapper — es mas simple que el PATCH
+    // =========================================================
+
+    @Test
+    @DisplayName("actualizarLibro PUT con ID existente actualiza y retorna el libro")
     void actualizarLibro_PUT_idExiste_retornaLibroActualizado() {
         // Given
         when(repository.getById(1L)).thenReturn(libroMock);
@@ -293,7 +498,7 @@ class LibrosServiceImplTest {
     }
 
     @Test
-    @DisplayName("actualizarLibro PUT con ID inexistente retorna null")
+    @DisplayName("actualizarLibro PUT con ID inexistente retorna null sin guardar")
     void actualizarLibro_PUT_idNoExiste_retornaNull() {
         // Given
         when(repository.getById(99L)).thenReturn(null);
@@ -304,6 +509,6 @@ class LibrosServiceImplTest {
         // Then
         assertNull(result);
         verify(repository, times(1)).getById(99L);
-        verify(repository, never()).save(any());
+        verify(repository, never()).save(any()); // nunca debe guardar
     }
 }
