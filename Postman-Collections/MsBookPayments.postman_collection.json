@@ -11,9 +11,40 @@
       "item": [
         {
           "name": "Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado del servicio es 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"El tiempo de respuesta es menor a 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "http://localhost:7171/actuator/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "7171",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
           },
           "response": []
         }
@@ -21,6 +52,29 @@
     },
     {
       "name": "C - Gateway Compras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway/Proxy respondió correctamente\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.test(\"El JSON tiene los campos esperados\", function () {",
+              "        pm.expect(jsonData).to.have.property(\"id\"); ",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [],
@@ -51,6 +105,36 @@
     },
     {
       "name": "C - Proxy Compras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway/Proxy respondió correctamente\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.test(\"El JSON tiene los campos esperados\", function () {",
+              "        pm.expect(jsonData).to.have.property(\"id\"); ",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [],
@@ -81,6 +165,30 @@
     },
     {
       "name": "C - Compras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Compra registrada con éxito - Status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Mensaje de confirmación correcto\", function () {",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type es correcto\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [],
