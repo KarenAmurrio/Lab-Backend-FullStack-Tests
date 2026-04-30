@@ -1,0 +1,220 @@
+{
+  "info": {
+    "_postman_id": "c4317bf1-84f2-4f06-ac13-4f3c98fb24eb",
+    "name": "MsBookPayments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40464949"
+  },
+  "item": [
+    {
+      "name": "Monitoreo",
+      "item": [
+        {
+          "name": "Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado del servicio es 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"El tiempo de respuesta es menor a 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:7171/actuator/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "7171",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "C - Gateway Compras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway/Proxy respondió correctamente\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.test(\"El JSON tiene los campos esperados\", function () {",
+              "        pm.expect(jsonData).to.have.property(\"id\"); ",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"targetMethod\": \"POST\",\n  \"queryParams\": {},\n  \"body\": {\n    \"libroId\": \"1\",\n    \"cantidad\": 2,\n\t\t\"precioTotal\": 39.80\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9191/msbookpayments/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9191",
+          "path": [
+            "msbookpayments",
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Proxy Compras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway/Proxy respondió correctamente\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.test(\"El JSON tiene los campos esperados\", function () {",
+              "        pm.expect(jsonData).to.have.property(\"id\"); ",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8181/msbookpayments/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8181",
+          "path": [
+            "msbookpayments",
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Compras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Compra registrada con éxito - Status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Mensaje de confirmación correcto\", function () {",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type es correcto\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:7171/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "7171",
+          "path": [
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
