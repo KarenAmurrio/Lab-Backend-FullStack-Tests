@@ -215,6 +215,218 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "C - Compras No hay Stock",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Compra registrada con éxito - Status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Mensaje de confirmación correcto\", function () {",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type es correcto\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:7171/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "7171",
+          "path": [
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Compras No Item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Compra registrada con éxito - Status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Mensaje de confirmación correcto\", function () {",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type es correcto\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:7171/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "7171",
+          "path": [
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Compras No Visible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Compra registrada con éxito - Status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Mensaje de confirmación correcto\", function () {",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type es correcto\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:7171/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "7171",
+          "path": [
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C - Compras No ItemD",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Compra registrada con éxito - Status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Mensaje de confirmación correcto\", function () {",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type es correcto\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/plain\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"libroId\": \"1\",\n  \"cantidad\": 1,\n  \"precioTotal\": 39.80\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:7171/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "7171",
+          "path": [
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
