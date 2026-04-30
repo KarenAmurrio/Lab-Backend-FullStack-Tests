@@ -61,6 +61,7 @@ class CompraControllerTest {
         verify(buscadorService).notificarCompra(eq(itemMock), eq(2));
     }
 
+    
     @Test
     void registrarCompra_Error400() throws Exception {
         when(buscadorService.validarItem(anyString(), anyInt())).thenReturn(null);
