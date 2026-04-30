@@ -1,0 +1,90 @@
+{
+  "info": {
+    "_postman_id": "36af4486-b588-4af5-9b06-79ca203c9fbe",
+    "name": "EurekaServerApp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45667026",
+    "_collection_link": "https://go.postman.co/collection/45667026-36af4486-b588-4af5-9b06-79ca203c9fbe?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Eureka está corriendo - Status 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Estado del servicio es UP\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body.status).to.equal(\"UP\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tiempo de respuesta menor a 2000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8761/actuator/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8761",
+          "path": [
+            "actuator",
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Panel Eureka",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Panel Eureka accesible - Status 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tiempo de respuesta menor a 2000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8761",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8761"
+        }
+      },
+      "response": []
+    }
+  ]
+}
