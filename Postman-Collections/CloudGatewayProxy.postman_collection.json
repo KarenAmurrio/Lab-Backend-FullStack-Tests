@@ -1,0 +1,201 @@
+{
+  "info": {
+    "_postman_id": "3a0fa5a0-8250-4ac7-b70e-6d1f12159dbb",
+    "name": "CloudGatewayProxy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45667026",
+    "_collection_link": "https://go.postman.co/collection/45667026-3a0fa5a0-8250-4ac7-b70e-6d1f12159dbb?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Gateway hacia Catalogue",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway enruta correctamente a Catalogue - Status 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response es un array de libros\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.be.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tiempo de respuesta menor a 3000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8181/ms-books-catalogue/libros",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8181",
+          "path": [
+            "ms-books-catalogue",
+            "libros"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Gateway hacia Catalogue por ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway enruta GET por ID - Status 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response tiene campos del libro\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.have.property('id');\r",
+              "    pm.expect(body).to.have.property('titulo');\r",
+              "    pm.expect(body).to.have.property('autor');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tiempo de respuesta menor a 3000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8181/ms-books-catalogue/libros/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8181",
+          "path": [
+            "ms-books-catalogue",
+            "libros",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Gateway hacia Payments",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Gateway enruta correctamente a Payments - Status 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Mensaje de confirmacion correcto\", function () {\r",
+              "    pm.response.to.have.body(\"Compra registrada con éxito\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tiempo de respuesta menor a 3000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"libroId\": \"1\",\r\n  \"cantidad\": 1,\r\n  \"precioTotal\": 39.80\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8181/msbookpayments/api/compras",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8181",
+          "path": [
+            "msbookpayments",
+            "api",
+            "compras"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Gateway routes",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Tabla de rutas accesible - Status 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Hay rutas configuradas\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "    pm.expect(body).to.be.an('array');\r",
+              "    pm.expect(body.length).to.be.above(0);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tiempo de respuesta menor a 2000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8181/actuator/gateway/routes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8181",
+          "path": [
+            "actuator",
+            "gateway",
+            "routes"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
