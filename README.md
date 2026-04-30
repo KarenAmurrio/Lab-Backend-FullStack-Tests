@@ -1,33 +1,126 @@
-# Lab-Backend-FullStack
+# Lab-Backend-FullStack — Pruebas Unitarias
 
-# Como Ejecutar
-Tras haber clonado el repositorio se debe abrir cada proyecto con tu editor favorito, para las pruebas se ha usado Netbeans e IntelliJ Community, en cualquiera funcionó, incluso un grupo en netbeans y otro en intellij.
+Repositorio de pruebas unitarias para el ecosistema de microservicios **Lab-Backend-FullStack**, desarrollado como parte de la materia **Prueba y Mantenimiento de Software (COM470)**.
 
-Para cada proyecto requiere tener el JDK-21 instalado en tu máquina.
+---
 
-Para cada proyecto debes descargar las dependencias, si unas netbeans le das clic sobre la carpeta dependencies->download declare dependencies. En intellij debes correr maven en el icono que aparece al lado derecho.
+## 👥 Equipo
 
-Debes levantar los proyectos en este orden.
+| Integrante | Rol | Módulo |
+|---|---|---|
+| Karen Amurrio Huaygua | Scrum Master / Tester | MsBooksCatalogue — Service |
+| Susana Manjon Blanco | Developer / Tester | MsBooksCatalogue — Controller |
+| Max Rodas Palacios | Developer / Tester | MsBookPayments — Service, Controller, Model |
 
-1.- EurekaServerApp
-2.- MsBooksCatalogue
-3.- MsBookPayments
-4.- CloudGatewayProxy
+---
 
-No se ha probado otro orden
+## 📁 Estructura del proyecto
 
-# CloudGatewayProxy (NOOB)
-Utiliza Cloud Gateway para crear un proxy inverso que será el punto de entrada de cualquier cliente a nuestro back-end, éste solo redirige las peticiones desde el frontal hacia las correspondientes GET, POST, PUT, PATCH o DELETE en cada microservicio.
+Los tests se encuentran dentro de la carpeta `src/test/java` de cada módulo:
 
-# EurekaServerApp
-Para cumplir: A su vez, ambos microservicios deberán registrarse automáticamente en su arranque en un servidor de Eureka, por lo que cualquier petición HTTP entre operador y buscador tiene que hacerse utilizando nombres relativos y no se debe incluir en ningún caso una dirección IP y un puerto.
+```
+Lab-Backend-FullStack/
+├── ms-books-catalogue-main/
+│   └── src/test/java/com/unir/ms_books_catalogue/
+│       ├── controller/
+│       │   └── LibrosControllerTest.java       (Susana — 14 tests)
+│       └── service/
+│           └── LibrosServiceImplTest.java      (Karen — 27 tests)
+│
+└── MsBookPayments/
+    └── src/test/java/com/g5/relpapel/msbookpayments/
+        ├── controller/
+        │   └── CompraControllerTest.java       (Max — 2 tests)
+        ├── model/
+        │   └── ItemTest.java                   (Max — 3 tests)
+        └── service/
+            └── BuscadorServiceTest.java        (Max — 13 tests)
+```
 
-# MsBooksCatalogue
-Es el encargado de acceder y tratar con una base de datos que contendrá los libros de nuestra aplicación. La API que exponga este microservicio debe permitir, además de crear, modificar (total o parcialmente) o eliminar ítems, buscar por todos los atributos de un libro (de forma individual o combinada). Estos son el título, el autor, la fecha de publicación, la categoría, el código ISBN, la valoración (nota de 1 a 5) y la visibilidad (algunos libros pueden estar ocultos y, por tanto, el front-end no debería mostrarlos nunca). La base de datos relacional utilizada es H2.
+---
 
-# MsBookPayments
-Es el encargado de ejecutar la acción principal de la aplicación (registrar compras). Para ello, realizará peticiones HTTP al microservicio buscador siempre que se necesite validar aquellos ítems sobre los que se está ejecutando una operación (principalmente, que existen y que están en un estado correcto, como, por ejemplo, que haya stock o que no estén ocultos). El resultado (el acuse de que la compra se ha realizado) se debe persistir en una base de datos relacional, para este cometido se ha usado H2.
+## 🧪 Resumen de pruebas
 
-# Extra: GatewayTranscripcionPeticiones (PRO)
-Similar al Cloud Gateway para crear un proxy inverso que será el punto de entrada de cualquier cliente a nuestro back-end, con la particularidad que este transcribe peticiones POST desde el frontal hacia las correspondientes GET, POST, PUT, PATCH o DELETE en cada microservicio. 
+| Clase | Integrante | Tests | Cobertura |
+|---|---|---|---|
+| LibrosServiceImpl | Karen | 27 | 100% |
+| LibrosController | Susana | 14 | 100% |
+| BuscadorService | Max | 13 | 100% |
+| CompraController | Max | 2 | 100% |
+| Item | Max | 3 | 100% |
+| **TOTAL** | | **59** | **100%** |
 
+---
+
+## 🛠️ Herramientas utilizadas
+
+- **JUnit 5** — estructura y ejecución de tests
+- **Mockito** — mocks de dependencias (Repository, RestTemplate, ObjectMapper)
+- **MockMvc** — tests de controllers REST sin servidor real
+- **Spring Boot Test 3.4.x** — `@WebMvcTest`, `@ExtendWith`
+- **ReflectionTestUtils** — inyección de valores `@Value` en tests
+- **IntelliJ Coverage** — medición de cobertura
+
+---
+
+## ▶️ Cómo ejecutar los tests
+
+### Desde IntelliJ IDEA
+
+1. Abrir el módulo que quieres testear (`ms-books-catalogue-main` o `MsBookPayments`)
+2. Click derecho sobre la carpeta `test`
+3. Selecciona **"Run 'All Tests'"** o **"Run with Coverage"**
+
+
+## 🚀 Cómo levantar el ecosistema completo
+
+Levantar los servicios en este orden:
+
+```bash
+# 1. Servidor de registro
+cd EurekaServerApp
+mvn spring-boot:run
+
+# 2. Microservicio de libros
+cd ms-books-catalogue-main
+mvn spring-boot:run
+
+# 3. Microservicio de pagos
+cd MsBookPayments
+mvn spring-boot:run
+
+# 4. Gateway proxy
+cd CloudGatewayProxy
+mvn spring-boot:run
+```
+
+Verificar que todo está corriendo:
+- **Eureka panel:** http://localhost:8761
+- **Swagger Catalogue:** http://localhost:8080/swagger-ui/index.html
+- **Gateway routes:** http://localhost:8181/actuator/gateway/routes
+
+---
+
+## 📋 Módulos del ecosistema
+
+| Módulo | Puerto | Descripción | Tests      |
+|---|--------|---|------------|
+| EurekaServerApp | 8761   | Servidor de registro de servicios | No aplica  |
+| ms-books-catalogue | 8080   | CRUD de libros con búsqueda por filtros | ✅ 41 tests |
+| MsBookPayments | 7171   | Registro de compras y validación de stock | ✅ 18 tests |
+| CloudGatewayProxy | 8181   | Proxy inverso y enrutamiento | No aplica  |
+
+
+---
+
+## 📄 Documentación
+
+El plan de pruebas completo se encuentra en el archivo `PlanDePruebas_Lab_Backend_FullStack.docx` en la raíz del repositorio. Incluye:
+
+- Objetivo y alcance de las pruebas
+- Definición y justificación de módulos seleccionados
+- 59 casos de prueba detallados
+- Estrategia de testing con JUnit y Mockito
+- Resultados reales de cobertura
+- Problemas encontrados y soluciones aplicadas
+- Organización Scrum del equipo
